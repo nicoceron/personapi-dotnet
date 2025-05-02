@@ -279,10 +279,11 @@ C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\s
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.personapi-dotnet.props
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.personapi-dotnet.props
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\staticwebassets.pack.json
-C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\personap.2C6DADCB.Up2Date
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\personapi-dotnet.dll
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\refint\personapi-dotnet.dll
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\personapi-dotnet.pdb
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\personapi-dotnet.genruntimeconfig.cache
 C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\ref\personapi-dotnet.dll
+C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\personapi-dotnet.sourcelink.json
+C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
