@@ -4,6 +4,11 @@
 
 An example API and web application built with ASP.NET Core (.NET 8) and Entity Framework Core. It manages entities like Personas, Profesiones, Estudios, and Telefonos. The application is dockerized using Docker Compose for easy setup and execution, including automatic database migrations.
 
+<br/>
+![image](https://github.com/user-attachments/assets/c1908673-3d90-4c44-b399-4b7857cf8721)
+<br/>
+
+
 ## Technology Stack
 
 * .NET 8
@@ -85,7 +90,5 @@ To stop and remove the containers:
 * `.dockerignore`: Specifies files/folders to exclude from the Docker build context.
 * `.env`: Stores environment variables (like the DB password) used by Docker Compose (Not committed to Git).
 
-
-![image](https://github.com/user-attachments/assets/c1908673-3d90-4c44-b399-4b7857cf8721)
 
 ---
