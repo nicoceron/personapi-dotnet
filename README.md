@@ -20,8 +20,6 @@ An example API and web application built with ASP.NET Core (.NET 8) and Entity F
 * SQL Server (via Docker)
 * Docker / Docker Compose
 * C#
-* Repository Pattern
-* Bootstrap 5
 * jQuery & jQuery Validation
 
 ## Prerequisites
@@ -31,7 +29,7 @@ Before you begin, ensure you have the following installed:
 * **Docker Desktop:** Make sure Docker Desktop is installed and running on your machine (Windows, macOS, or Linux). Download from [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/).
 * **Git:** Required for cloning the repository.
 
-## Running with Docker Compose (Recommended Method)
+## Running with Docker Compose
 
 This method starts both the web application and the SQL Server database within Docker containers. Database migrations are applied automatically when the application container starts.
 
