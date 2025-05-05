@@ -53,15 +53,11 @@ This method starts both the web application and the SQL Server database within D
     * `-d`: Runs the containers in the background (detached mode).
     * The first time you run this, it might take a few minutes to download the SQL Server image and build the application image.
 
-5.  **Initialization:** Wait for the containers to start. The `docker-compose.yml` includes a health check for the database. The application container will wait for the database to be healthy before starting and then attempt to apply database migrations. You can monitor the progress using:
-    ```bash
-    docker-compose logs -f app
-    ```
-    *(Press `Ctrl+C` to stop viewing logs).* Look for messages indicating migrations are being applied or the database schema is up-to-date.
+5.  **Initialization:** Wait for the containers to start. The application container includes a short delay (`sleep 10` in the entrypoint) before starting the application to allow the database time to initialize.
 
 6.  **Access the Application:** Once the application container is running (check `docker ps`), open your web browser and navigate to:
-    [http://localhost:5094](http://localhost:5094)
-    *(Note: This uses port 5094 on your host machine, as configured in `docker-compose.yml`)*
+    `http://localhost:8080`
+    *(Note: This uses port 8080 on your host machine, as configured in `docker-compose.yml`)*
 
 ## Stopping the Application
 
