@@ -34,14 +34,14 @@ This method starts both the web application and the SQL Server database within D
     # cd personapi-dotnet
     ```
 
-2.  **Configure Database Password:**
+2.  **Configure Database Password: [Optional]**
     * In the root directory of the project, create a file named `.env`.
     * Add the following line to the `.env` file, replacing `Your_Strong_Password123!` with a secure password of your choice:
         ```dotenv
         # .env
-        DB_PASSWORD=Your_Strong_Password123!
+        DB_PASSWORD=Password123
         ```
-    * **Important:** The `docker-compose.yml` file is already configured to read the password from this `.env` file. Do NOT hardcode the password directly in `docker-compose.yml`.
+    * **Important:** The `docker-compose.yml` file is already configured to read the password from this `.env` file. There's a hardcoded password directly in `docker-compose.yml`.
 
 3.  **Open a terminal or command prompt** in the project's root directory (the folder containing `docker-compose.yml`).
 
@@ -88,6 +88,8 @@ To stop and remove the containers:
 * `docker-compose.yml`: Defines the application and database services for Docker Compose.
 * `.dockerignore`: Specifies files/folders to exclude from the Docker build context.
 * `.env`: Stores environment variables (like the DB password) used by Docker Compose (Not committed to Git).
-* `README.md`: This file.
+
+
+![image](https://github.com/user-attachments/assets/c1908673-3d90-4c44-b399-4b7857cf8721)
 
 ---
