@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  personapi-app:
+    container_name: personapi-app
+    build: .
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+      # - "8081:8081" # Uncomment if your app uses port 8081 for HTTPS
+    environment:
+      # Use the service name 'db' as the server name
+      - ConnectionStrings__DefaultConnection=Server=db;Database=persona_db;User ID=sa;Password=YourStrong(!)Password;TrustServerCertificate=True;MultipleActiveResultSets=true
+      # Ensure ASPNETCORE_URLS matches exposed ports if needed, default is usually fine
+      # - ASPNETCORE_URLS=http://+:8080;https://+:8081
+    depends_on:
+      - db
+    # Add entrypoint to wait for DB (adjust sleep time if needed)
+    entrypoint: ["sh", "-c", "sleep 15 && dotnet personapi-dotnet.dll"]
+
+  db:
+    container_name: sqlserver-db
+    image: mcr.microsoft.com/mssql/server:2022-latest # Using SQL Server 2022 Linux image
+    ports:
+      - "1433:1433" # Optional: Map host port 1433 to container port 1433 if direct DB access from host is needed
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong(!)Password # USE THE SAME STRONG PASSWORD HERE
+    volumes:
+      - sqlserver_data:/var/opt/mssql # Persist database data
+
+volumes:
+  sqlserver_data:

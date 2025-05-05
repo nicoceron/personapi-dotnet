@@ -15,6 +15,16 @@
             <input type="hidden" asp-for="IdProf" />
             <input type="hidden" asp-for="CcPer" />
             <div class="form-group">
+                <label asp-for="IdProf" class="control-label">Profesión</label>
+                <select asp-for="IdProf" class="form-control" asp-items="ViewBag.Profesiones" disabled></select>
+                <span asp-validation-for="IdProf" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CcPer" class="control-label">Persona</label>
+                <select asp-for="CcPer" class="form-control" asp-items="ViewBag.Personas" disabled></select>
+                <span asp-validation-for="CcPer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Fecha" class="control-label"></label>
                 <input asp-for="Fecha" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>

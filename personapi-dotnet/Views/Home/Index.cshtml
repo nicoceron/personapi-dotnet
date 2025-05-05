@@ -1,8 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Person API Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron mt-4">
+    <h1 class="display-4">Bienvenido a la API de Personas</h1>
+    <p class="lead">Una API de ejemplo construida con ASP.NET Core y Entity Framework Core para gestionar personas, profesiones, estudios y teléfonos.</p>
+    <hr class="my-4">
+    <p>Utilice los siguientes enlaces para explorar los datos gestionados por la API.</p>
+    <div class="mt-3">
+        <a class="btn btn-primary btn-lg me-2" href="@Url.Action("Index", "Personas")" role="button">Ver Personas</a> 
+        <a class="btn btn-secondary btn-lg me-2" href="@Url.Action("Index", "Profesiones")" role="button">Ver Profesiones</a> 
+        @* Add more links as needed, e.g., to Estudios or Telefonos Controllers if they exist *@
+        <a class="btn btn-info btn-lg me-2" href="@Url.Action("Index", "Estudios")" role="button">Ver Estudios</a> 
+        <a class="btn btn-warning btn-lg" href="@Url.Action("Index", "Telefonos")" role="button">Ver Telefonos</a> 
+    </div>
+    <p class="mt-4 text-muted"><small>El backend está dockerizado junto con una base de datos SQL Server.</small></p>
 </div>

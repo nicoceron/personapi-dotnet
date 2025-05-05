@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering; // For SelectList
 using Microsoft.EntityFrameworkCore; // For DbUpdateConcurrencyException
+using Microsoft.Extensions.Logging; // Add logging namespace
 using personapi_dotnet.Models.Entities;
 using personapi_dotnet.Models.Interfaces; // Using for Interfaces namespace
 using System.Linq; // For OrderBy
@@ -14,12 +15,18 @@ namespace personapi_dotnet.Controllers
         private readonly IEstudioRepository _estudioRepository;
         private readonly IPersonaRepository _personaRepository;
         private readonly IProfesionRepository _profesionRepository;
+        private readonly ILogger<EstudiosController> _logger; // Add logger field
 
-        public EstudiosController(IEstudioRepository estudioRepository, IPersonaRepository personaRepository, IProfesionRepository profesionRepository)
+        public EstudiosController(
+            IEstudioRepository estudioRepository, 
+            IPersonaRepository personaRepository, 
+            IProfesionRepository profesionRepository, 
+            ILogger<EstudiosController> logger) // Inject logger
         {
             _estudioRepository = estudioRepository;
             _personaRepository = personaRepository;
             _profesionRepository = profesionRepository;
+            _logger = logger; // Assign logger
         }
 
         // GET: Estudios
@@ -94,34 +101,80 @@ namespace personapi_dotnet.Controllers
         // POST: Estudios/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // Accept original keys + binded model
         public async Task<IActionResult> Edit(int idProf, int ccPer, [Bind("IdProf,CcPer,Fecha,Univer")] Estudio estudio)
         {
-            // Ensure the keys weren't changed in the form submission
+            _logger.LogInformation("Attempting to edit Estudio with IdProf: {IdProf}, CcPer: {CcPer}", idProf, ccPer);
             if (idProf != estudio.IdProf || ccPer != estudio.CcPer)
             {
+                _logger.LogWarning("Route parameters ({RouteIdProf}, {RouteCcPer}) do not match model keys ({ModelIdProf}, {ModelCcPer}).", idProf, ccPer, estudio.IdProf, estudio.CcPer);
                 return BadRequest("Las claves primarias (IdProf, CcPer) no pueden ser modificadas.");
-                // Or return NotFound() if preferred
             }
 
+            // Exclude navigation properties from model state validation as they are not bound
+            ModelState.Remove(nameof(Estudio.CcPerNavigation)); 
+            ModelState.Remove(nameof(Estudio.IdProfNavigation));
 
             if (ModelState.IsValid)
             {
+                _logger.LogInformation("ModelState is valid for Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
                 try
                 {
-                    // Use Repository method - ensure repo Update handles composite keys correctly
+                    _logger.LogInformation("Calling repository Update for Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
                     _estudioRepository.Update(estudio);
-                    await _estudioRepository.SaveChangesAsync(); // Save changes via repository
+
+                    _logger.LogInformation("Calling repository SaveChangesAsync for Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
+                    bool saved = await _estudioRepository.SaveChangesAsync();
+                    _logger.LogInformation("SaveChangesAsync result for Estudio IdProf: {IdProf}, CcPer: {CcPer}: {Saved}", estudio.IdProf, estudio.CcPer, saved);
+
+                    if (!saved)
+                    {
+                        _logger.LogWarning("SaveChangesAsync returned false for Estudio IdProf: {IdProf}, CcPer: {CcPer}. No records affected?", estudio.IdProf, estudio.CcPer);
+                        // Decide how to handle this - maybe return error to user?
+                        // ModelState.AddModelError("", "No se pudo guardar el registro. Intente de nuevo.");
+                        // await PopulatePersonasDropDownList(estudio.CcPer);
+                        // await PopulateProfesionesDropDownList(estudio.IdProf);
+                        // return View(estudio);
+                    }
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    // Check existence using repository with composite key
+                    _logger.LogError(ex, "Concurrency exception editing Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
                     var exists = await _estudioRepository.GetByIdAsync(estudio.IdProf, estudio.CcPer);
-                    if (exists == null) return NotFound(); else throw;
+                    if (exists == null) 
+                    {
+                        _logger.LogWarning("Estudio IdProf: {IdProf}, CcPer: {CcPer} not found after concurrency exception.", estudio.IdProf, estudio.CcPer);
+                        return NotFound(); 
+                    } 
+                    else 
+                    { 
+                        throw; 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Exception editing Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
+                    // Optional: Add a generic error message for the user
+                    // ModelState.AddModelError("", "Ocurrió un error inesperado al guardar.");
+                    // await PopulatePersonasDropDownList(estudio.CcPer);
+                    // await PopulateProfesionesDropDownList(estudio.IdProf);
+                    // return View(estudio);
+                    throw; // Re-throw for now to see the error in development
                 }
                 return RedirectToAction(nameof(Index));
             }
-            // Repopulate dropdowns if model state is invalid
+            else
+            {
+                _logger.LogWarning("ModelState is invalid for Estudio IdProf: {IdProf}, CcPer: {CcPer}", estudio.IdProf, estudio.CcPer);
+                // Log validation errors
+                foreach (var state in ModelState)
+                {
+                    if (state.Value.Errors.Any())
+                    {
+                        _logger.LogWarning("- Field: {Field}, Errors: {Errors}", state.Key, string.Join(", ", state.Value.Errors.Select(e => e.ErrorMessage)));
+                    }
+                }
+            }
+            // Repopulate dropdowns if returning view due to invalid ModelState
             await PopulatePersonasDropDownList(estudio.CcPer);
             await PopulateProfesionesDropDownList(estudio.IdProf);
             return View(estudio);

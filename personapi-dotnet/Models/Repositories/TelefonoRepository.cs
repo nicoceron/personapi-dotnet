@@ -18,7 +18,9 @@ namespace personapi_dotnet.Models.Repositories
 
         public async Task<Telefono?> GetByIdAsync(string num)
         {
-            return await _context.Telefonos.FindAsync(num); // DbSet es Telefonos
+            return await _context.Telefonos
+                .Include(t => t.DuenioNavigation) // Include the owner details
+                .FirstOrDefaultAsync(t => t.Num == num);
         }
 
         public async Task<IEnumerable<Telefono>> GetByPersonaIdAsync(int duenioCc)
@@ -29,7 +31,9 @@ namespace personapi_dotnet.Models.Repositories
 
         public async Task<IEnumerable<Telefono>> GetAllAsync()
         {
-            return await _context.Telefonos.ToListAsync();
+            return await _context.Telefonos
+                .Include(t => t.DuenioNavigation) // Include the owner details
+                .ToListAsync();
         }
 
         public async Task AddAsync(Telefono telefono)
@@ -39,7 +43,16 @@ namespace personapi_dotnet.Models.Repositories
 
         public void Update(Telefono telefono)
         {
-            _context.Entry(telefono).State = EntityState.Modified;
+            // Fetch existing first to ensure the context is tracking it
+            var existingTelefono = _context.Telefonos.Find(telefono.Num);
+            if (existingTelefono != null)
+            {
+                // Apply changes from the submitted object to the tracked entity
+                _context.Entry(existingTelefono).CurrentValues.SetValues(telefono);
+                // Explicitly mark as modified (optional, SetValues often does this, but belt-and-suspenders)
+                _context.Entry(existingTelefono).State = EntityState.Modified; 
+            }
+            // else: Handle case where the entity to update wasn't found, though Edit(GET) should prevent this.
         }
 
         public void Delete(Telefono telefono)

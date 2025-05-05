@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering; // For SelectList
 using Microsoft.EntityFrameworkCore; // For DbUpdateConcurrencyException
+using Microsoft.Extensions.Logging; // Add logging namespace
 using personapi_dotnet.Models.Entities;
 using personapi_dotnet.Models.Interfaces; // Using for Interfaces namespace
 using System.Linq; // For OrderBy in dropdown
@@ -13,11 +14,13 @@ namespace personapi_dotnet.Controllers
         // Inject necessary Repository Interfaces
         private readonly ITelefonoRepository _telefonoRepository;
         private readonly IPersonaRepository _personaRepository; // For dropdown
+        private readonly ILogger<TelefonosController> _logger; // Add logger field
 
-        public TelefonosController(ITelefonoRepository telefonoRepository, IPersonaRepository personaRepository)
+        public TelefonosController(ITelefonoRepository telefonoRepository, IPersonaRepository personaRepository, ILogger<TelefonosController> logger)
         {
             _telefonoRepository = telefonoRepository;
             _personaRepository = personaRepository;
+            _logger = logger; // Assign logger
         }
 
         // GET: Telefonos
@@ -88,27 +91,77 @@ namespace personapi_dotnet.Controllers
         // POST: Telefonos/Edit/123-4567
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string num, [Bind("Num,Oper,Duenio")] Telefono telefono) // Parameter is PK 'num'
+        public async Task<IActionResult> Edit(string num, [Bind("Num,Oper,Duenio")] Telefono telefono)
         {
-            if (num != telefono.Num) return NotFound();
+            _logger.LogInformation("Attempting to edit Telefono with Num: {Num}", num);
+            if (num != telefono.Num)
+            {
+                _logger.LogWarning("Route parameter Num ({RouteNum}) does not match model Num ({ModelNum}).", num, telefono.Num);
+                return NotFound();
+            }
+
+            // Exclude navigation property from model state validation as it's not bound directly
+            ModelState.Remove(nameof(Telefono.DuenioNavigation));
 
             if (ModelState.IsValid)
             {
+                 _logger.LogInformation("ModelState is valid for Telefono Num: {Num}", telefono.Num);
                 try
                 {
-                    // Use Repository method
+                    _logger.LogInformation("Calling repository Update for Telefono Num: {Num}", telefono.Num);
                     _telefonoRepository.Update(telefono);
-                    await _telefonoRepository.SaveChangesAsync(); // Save changes via repository
+                    
+                    _logger.LogInformation("Calling repository SaveChangesAsync for Telefono Num: {Num}", telefono.Num);
+                    bool saved = await _telefonoRepository.SaveChangesAsync();
+                    _logger.LogInformation("SaveChangesAsync result for Telefono Num {Num}: {Saved}", telefono.Num, saved);
+
+                    if (!saved)
+                    {
+                       _logger.LogWarning("SaveChangesAsync returned false for Telefono Num: {Num}. No records affected?", telefono.Num);
+                        // Decide how to handle this - maybe return error to user?
+                        // ModelState.AddModelError("", "No se pudo guardar el registro. Intente de nuevo.");
+                        // await PopulatePersonasDropDownList(telefono.Duenio);
+                        // return View(telefono);
+                    }
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    // Check existence using repository
+                    _logger.LogError(ex, "Concurrency exception editing Telefono Num: {Num}", telefono.Num);
                     var exists = await _telefonoRepository.GetByIdAsync(telefono.Num);
-                    if (exists == null) return NotFound(); else throw;
+                    if (exists == null) 
+                    {
+                         _logger.LogWarning("Telefono Num {Num} not found after concurrency exception.", telefono.Num);
+                        return NotFound(); 
+                    } 
+                    else 
+                    { 
+                        throw; 
+                    }
+                }
+                 catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Exception editing Telefono Num: {Num}", telefono.Num);
+                    // Optional: Add a generic error message for the user
+                    // ModelState.AddModelError("", "Ocurrió un error inesperado al guardar.");
+                    // await PopulatePersonasDropDownList(telefono.Duenio);
+                    // return View(telefono);
+                    throw; // Re-throw for now to see the error in development
                 }
                 return RedirectToAction(nameof(Index));
             }
-            // Repopulate dropdown if model state is invalid
+            else
+            {
+                _logger.LogWarning("ModelState is invalid for Telefono Num: {Num}", telefono.Num);
+                 // Log validation errors
+                foreach (var state in ModelState)
+                {
+                    if (state.Value.Errors.Any())
+                    {
+                        _logger.LogWarning("- Field: {Field}, Errors: {Errors}", state.Key, string.Join(", ", state.Value.Errors.Select(e => e.ErrorMessage)));
+                    }
+                }
+            }
+            // Repopulate dropdown if returning view due to invalid ModelState
             await PopulatePersonasDropDownList(telefono.Duenio);
             return View(telefono);
         }

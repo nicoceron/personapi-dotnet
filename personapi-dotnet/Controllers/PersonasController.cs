@@ -25,14 +25,14 @@ namespace personapi_dotnet.Controllers
         }
 
         // GET: Personas/Details/5
-        public async Task<IActionResult> Details(int? cc) // Parameter renamed for clarity
+        public async Task<IActionResult> Details(int? id) // Parameter renamed to id
         {
-            if (cc == null)
+            if (id == null)
             {
                 return NotFound();
             }
             // Use Repository method
-            var persona = await _repository.GetByIdAsync(cc.Value);
+            var persona = await _repository.GetByIdAsync(id.Value);
             if (persona == null)
             {
                 return NotFound();
@@ -70,14 +70,14 @@ namespace personapi_dotnet.Controllers
         }
 
         // GET: Personas/Edit/5
-        public async Task<IActionResult> Edit(int? cc) // Parameter renamed for clarity
+        public async Task<IActionResult> Edit(int? id) // Parameter renamed to id
         {
-            if (cc == null)
+            if (id == null)
             {
                 return NotFound();
             }
             // Use Repository method
-            var persona = await _repository.GetByIdAsync(cc.Value);
+            var persona = await _repository.GetByIdAsync(id.Value);
             if (persona == null)
             {
                 return NotFound();
@@ -88,9 +88,9 @@ namespace personapi_dotnet.Controllers
         // POST: Personas/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int cc, [Bind("Cc,Nombre,Apellido,Genero,Edad")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("Cc,Nombre,Apellido,Genero,Edad")] Persona persona) // Route parameter renamed to id
         {
-            if (cc != persona.Cc)
+            if (id != persona.Cc) // Check route id against model Cc
             {
                 return NotFound();
             }
@@ -99,9 +99,20 @@ namespace personapi_dotnet.Controllers
             {
                 try
                 {
-                    // Use Repository method - assumes repository handles marking as modified
                     _repository.Update(persona);
-                    await _repository.SaveChangesAsync(); // Save changes via repository
+                    // Check the result of SaveChangesAsync
+                    bool saved = await _repository.SaveChangesAsync(); 
+                    if (!saved)
+                    {
+                        // Log or handle the case where no changes were saved
+                        // For now, let's assume it might be a concurrency issue or no actual change
+                        // Consider adding logging here if problems persist
+                        var exists = await _repository.GetByIdAsync(persona.Cc);
+                        if (exists == null) return NotFound(); 
+                        // If it exists but wasn't saved, maybe return the view with an error?
+                        // ModelState.AddModelError("", "No se pudieron guardar los cambios.");
+                        // return View(persona);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -122,14 +133,14 @@ namespace personapi_dotnet.Controllers
         }
 
         // GET: Personas/Delete/5
-        public async Task<IActionResult> Delete(int? cc) // Parameter renamed for clarity
+        public async Task<IActionResult> Delete(int? id) // Parameter renamed to id
         {
-            if (cc == null)
+            if (id == null)
             {
                 return NotFound();
             }
             // Use Repository method
-            var persona = await _repository.GetByIdAsync(cc.Value);
+            var persona = await _repository.GetByIdAsync(id.Value);
             if (persona == null)
             {
                 return NotFound();
@@ -140,14 +151,21 @@ namespace personapi_dotnet.Controllers
         // POST: Personas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int cc) // Parameter renamed for clarity
+        public async Task<IActionResult> DeleteConfirmed(int id) // Parameter renamed to id
         {
             // Use Repository method to get entity before deleting
-            var persona = await _repository.GetByIdAsync(cc);
+            var persona = await _repository.GetByIdAsync(id);
             if (persona != null)
             {
                 _repository.Delete(persona);
-                await _repository.SaveChangesAsync(); // Save changes via repository
+                // Check the result of SaveChangesAsync
+                bool saved = await _repository.SaveChangesAsync(); 
+                if (!saved)
+                {
+                    // Log or handle the case where delete didn't save
+                    // This is more unusual than edit not saving.
+                    // Consider adding logging here.
+                }
             }
             // If persona is null, it was already deleted or never existed.
             return RedirectToAction(nameof(Index));

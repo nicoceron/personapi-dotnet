@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Oper)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DuenioNavigation)
+                @Html.DisplayName("Dueño")
             </th>
             <th></th>
         </tr>
@@ -28,12 +28,13 @@
                 @Html.DisplayFor(modelItem => item.Oper)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DuenioNavigation.Cc)
+                @Html.DisplayFor(modelItem => item.DuenioNavigation.Nombre) @Html.DisplayFor(modelItem => item.DuenioNavigation.Apellido)
+                 (@Html.DisplayFor(modelItem => item.DuenioNavigation.Cc))
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Num">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Num">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Num">Delete</a>
+                <a asp-action="Edit" asp-route-num="@item.Num">Edit</a> |
+                <a asp-action="Details" asp-route-num="@item.Num">Details</a> |
+                <a asp-action="Delete" asp-route-num="@item.Num">Delete</a>
             </td>
         </tr>
 }

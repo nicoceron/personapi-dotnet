@@ -14,6 +14,6 @@
     <WebStackScaffolding_ControllerDialogWidth>650</WebStackScaffolding_ControllerDialogWidth>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
     <WebStackScaffolding_IsViewGenerationSelected>True</WebStackScaffolding_IsViewGenerationSelected>
-    <NameOfLastUsedPublishProfile>C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\ceron\source\repos\personapi-dotnet\personapi-dotnet\Properties\PublishProfiles\personapi-dotnet.azurecr.io.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
