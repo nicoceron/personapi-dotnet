@@ -6,7 +6,7 @@ An example API and web application built with ASP.NET Core (.NET 8) and Entity F
 
 <br/>
 
-![image](https://github.com/user-attachments/assets/3ba59861-4074-46d2-9838-2fcbe1069593)
+![image](https://github.com/user-attachments/assets/bbb2bf6b-f9e1-4e15-a2d2-33c2046da091)
 
 
 <br/>
