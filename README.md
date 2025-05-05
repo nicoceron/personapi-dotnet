@@ -42,7 +42,7 @@ This method starts both the web application and the SQL Server database within D
 
 2.  **Configure Database Password: [Optional]**
     * In the root directory of the project, create a file named `.env`.
-    * Add the following line to the `.env` file, replacing `Your_Strong_Password123!` with a secure password of your choice:
+    * Add the following line to the `.env` file, replacing `Password123` with a secure password of your choice:
         ```dotenv
         # .env
         DB_PASSWORD=Password123
