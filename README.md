@@ -5,7 +5,7 @@
 An example API and web application built with ASP.NET Core (.NET 8) and Entity Framework Core. It manages entities like Personas, Profesiones, Estudios, and Telefonos. The application is dockerized using Docker Compose for easy setup and execution, including automatic database migrations.
 
 <br/>
-![image](https://github.com/user-attachments/assets/c1908673-3d90-4c44-b399-4b7857cf8721)
+![image](https://github.com/user-attachments/assets/cf5999b4-fb49-448c-bb51-207ec135e106)
 <br/>
 
 
